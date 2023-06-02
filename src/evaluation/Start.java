@@ -47,7 +47,7 @@ public class Start {
 			 * class3: numberOfFitnessEval = 400000
 			 */
 			
-			int numberOfFitnessEval = 2000;			
+			int numberOfFitnessEval = 500;			
 			GaSolver solver         = new GaSolver(numberOfFitnessEval);
 			
 			

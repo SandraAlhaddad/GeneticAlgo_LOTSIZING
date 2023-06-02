@@ -25,7 +25,7 @@ public class GaSolver  {
 	}
 
 	public ProductionSchedule solve(Instance instance) {
-//		Individual.firstLastPeriods(instance);
+		Individual.firstLastPeriods(instance);
 //		Individual.mutationsProp();
 		Individual bestIndi;
 		
@@ -61,7 +61,7 @@ public class GaSolver  {
 			elter = pop[winner];
 			child = new Individual(instance);
 			child.reproduce(elter);
-//			child.mutate();
+			child.mutate();
 			child.decoding(instance);
 			child.evaluate();
 			

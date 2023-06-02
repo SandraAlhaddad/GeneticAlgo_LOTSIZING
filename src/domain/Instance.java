@@ -17,7 +17,7 @@ public class Instance {
     private int itemCount;
     private String name;
     private Map<Integer, Item> items = new HashMap<Integer, Item>();
-    
+    private int firstPeriod;
 
     public Instance(String name) {
         this.name = name;
@@ -78,14 +78,17 @@ public class Instance {
     	}
     	
         for (int itemKey = 1; itemKey <= itemCount; itemKey++) {
+        	firstPeriod = 1;
         	determineDemandForClass(ps, itemKey);
         	if (getProblemClass() == ProblemClass.THREE) {
                 determineDemandForClassThree(ps, itemKey);
             }
-//            else{
-//            	// for each item, put the first bit = 1
-//            	ps.setBitInGenome(itemKey, 1, 1);
-//            }
+        	for (int period = 1; period <= periodCount; period++) {
+        		if (ps.getDemandForPeriod(itemKey, period) != 0 ) {
+        			firstPeriod = period;
+        			break;
+        		}
+        	}
             determineProduction(ps, itemKey);
         }
         calculateCosts(ps);
@@ -132,52 +135,37 @@ public class Instance {
     private void determineProduction(ProductionSchedule ps, int itemKey) {
         int onHold = 0;
         int succ = 0;
-        
-        for (int period = periodCount; period >= 1; period--) {
-        	if(items.get(itemKey).getProductionCosts() < ((double) ps.getOnHold(itemKey, period) * items.get(itemKey).getHoldingCosts()) ) {
-                ps.setProduction(itemKey, period, ps.getDemandForPeriod(itemKey, period) + onHold);
-                ps.setOnHold(itemKey, period, onHold);
+        ps.setProduction(itemKey, firstPeriod, ps.getDemandForPeriod(itemKey, firstPeriod));
+        ps.setOnHold(itemKey, firstPeriod, onHold);
+        int lastProdPeriod = firstPeriod; 
+        for (int period = firstPeriod + 1 ; period <= periodCount; period++) {
+        	if(items.get(itemKey).getProductionCosts() < ((double) ps.getDemandForPeriod(itemKey, period) * items.get(itemKey).getHoldingCosts() * (period - lastProdPeriod)) ) {
                 onHold = 0;
+        		ps.setProduction(itemKey, period, ps.getDemandForPeriod(itemKey, period));
+                ps.setOnHold(itemKey, period, onHold);
                 succ = 0;
+                lastProdPeriod = period; 
             } else {
             	if(succ < ps.getGenome(itemKey)) {
-	                ps.setProduction(itemKey, period, 0);
-	                ps.setOnHold(itemKey, period, onHold);
-	                onHold += ps.getDemandForPeriod(itemKey, period);
-	                succ = succ + 1;
+            		onHold = ps.getDemandForPeriod(itemKey, period);
+            		for(int i= period-1; i>=1; i--) {
+            			if (ps.getProduction(itemKey, i) != 0) {
+			                ps.setProduction(itemKey, i, ps.getProduction(itemKey, i) + onHold);
+			                ps.setOnHold(itemKey, i, ps.getOnHold(itemKey, i) + onHold);
+			                succ = succ + 1;
+			                break;
+            			}
+            		}
             	} else {
-            		onHold = 0;
-                    ps.setProduction(itemKey, period, ps.getDemandForPeriod(itemKey, period) + onHold);
+                    onHold = 0;
+                    ps.setProduction(itemKey, period, ps.getDemandForPeriod(itemKey, period));
                     ps.setOnHold(itemKey, period, onHold);
+                    succ = 0;
+                    lastProdPeriod = period; 
             	}
             }
         }
     }
-    
-//    private void determineProduction2(ProductionSchedule ps, int itemKey) {
-//        int onHold = 0;
-//        int succ = 0;
-//        for (int period = periodCount; period >= 1; period--) {
-//        	if(items.get(itemKey).getProductionCosts() < items.get(itemKey).getHoldingCosts() ) {
-//                ps.setProduction(itemKey, period, ps.getDemandForPeriod(itemKey, period) + onHold);
-//                ps.setOnHold(itemKey, period, onHold);
-//                onHold = 0;
-//                succ = 0;
-//            } else {
-//            	if(succ < ps.getGenome2(itemKey)) {
-//	                ps.setProduction(itemKey, period, 0);
-//	                ps.setOnHold(itemKey, period, onHold);
-//	                onHold += ps.getDemandForPeriod(itemKey, period);
-//	                succ = succ + 1;
-//            	} else {
-//                    ps.setProduction(itemKey, period, ps.getDemandForPeriod(itemKey, period) + onHold);
-//                    ps.setOnHold(itemKey, period, onHold);
-//                    onHold = 0;
-//            	}
-//            	
-//            }
-//        }
-//    }
 
     public int getFinalGoodCount() {
         return finalGoodCount;
