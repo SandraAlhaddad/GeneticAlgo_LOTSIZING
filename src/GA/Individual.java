@@ -15,6 +15,7 @@ public class Individual {
 	private int[] genotype;
 	private ProductionSchedule phaenotype;
 	private double fitness;
+	private Instance instance;
 
 	public static void firstLastPeriods(Instance inst){
 		ProductionSchedule ps = new ProductionSchedule(inst.getItemCount(), inst.getPeriodCount());
@@ -43,11 +44,12 @@ public class Individual {
 	
 	Individual(Instance inst){
 		genotype = new int[inst.getItemCount()];
+		instance = inst;
 	}
 	
 	public void initRandom() {
 	for (int i = 0; i < genotype.length; i++) {
-		genotype[i] = (int) (Math.random()*genotype.length);
+		genotype[i] = (int) (Math.random()*instance.getPeriodCount());
 		}
 	}
 	
