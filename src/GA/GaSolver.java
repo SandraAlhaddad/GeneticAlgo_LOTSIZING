@@ -38,6 +38,7 @@ public class GaSolver  {
 		
 		Individual[] pop = new Individual[popSize];
 		Individual parent1, parent2, child1, child2;
+		int parent1Index, parent2Index = 0;
 
 		for(int i=0;i<popSize;i++){
 			pop[i] = new Individual(instance);
@@ -50,9 +51,11 @@ public class GaSolver  {
 		for(int g=0;g<maxIter;g++){
 			int tournamentSize = 5;
 
-			parent1 = tournamentSelection(pop, tournamentSize);
+			parent1Index = randomSelection(pop, tournamentSize);
+			parent1 = pop[parent1Index];
 			do {
-				parent2 = tournamentSelection(pop, tournamentSize);
+				parent2Index = randomSelection(pop, tournamentSize);
+				parent2 = pop[parent2Index];
 			} while (parent2 == parent1);
 			child1 = new Individual(instance);
 			child2 = new Individual(instance);
@@ -69,9 +72,9 @@ public class GaSolver  {
 
 
 			if(children[0].getFitness() < parent1.getFitness())
-				parent1 = children[0];
+				pop[parent1Index] = children[0];
 			if(children[1].getFitness() < parent2.getFitness())
-				parent2 = children[1];
+				pop[parent2Index] = children[1];
 			
 		}
 		
@@ -95,16 +98,23 @@ public class GaSolver  {
 
 	}
 
-	private Individual tournamentSelection(Individual[] population, int tournamentSize) {
+	private int tournamentSelection(Individual[] population, int tournamentSize) {
 		Random rand = new Random();
 		Individual best = null;
+		int bestIndiIndex = 0;
 		for (int i = 0; i < tournamentSize; i++) {
 			int randomIndex = rand.nextInt(popSize);
 			Individual candidate = population[randomIndex];
 			if (best == null || candidate.getFitness() < best.getFitness()) {
 				best = candidate;
+				bestIndiIndex = randomIndex;
 			}
 		}
-		return best;
+		return bestIndiIndex;
+	}
+
+	private int randomSelection(Individual[] population, int tournamentSize) {
+		Random rand = new Random();
+		return rand.nextInt(0, population.length);
 	}
 }
