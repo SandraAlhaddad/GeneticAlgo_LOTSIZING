@@ -3,6 +3,7 @@ package GA;
 import domain.Instance;
 import domain.ProductionSchedule;
 
+import java.util.Random;
 
 
 public class GaSolver  {
@@ -36,7 +37,7 @@ public class GaSolver  {
 		 */
 		
 		Individual[] pop = new Individual[popSize];
-		Individual elter, child;
+		Individual parent1, parent2, child1, child2;
 
 		for(int i=0;i<popSize;i++){
 			pop[i] = new Individual(instance);
@@ -47,27 +48,30 @@ public class GaSolver  {
 		}
 		
 		for(int g=0;g<maxIter;g++){
-			int x1 = (int)(popSize*Math.random());
-			int x2 = (int)(popSize*Math.random());
-			int winner, looser;
-			if(pop[x1].getFitness() < pop[x2].getFitness()){
-				winner = x1;
-				looser = x2;
-			}
-			else{
-				winner = x2;
-				looser = x1;
-			}
-			elter = pop[winner];
-			child = new Individual(instance);
-			child.reproduce(elter);
-			child.mutate();
-			child.decoding(instance);
-			child.evaluate();
-			
-			//Replacement
-			if(pop[looser].getFitness() > child.getFitness())
-			pop[looser] = child;
+			int tournamentSize = 5;
+
+			parent1 = tournamentSelection(pop, tournamentSize);
+			do {
+				parent2 = tournamentSelection(pop, tournamentSize);
+			} while (parent2 == parent1);
+			child1 = new Individual(instance);
+			child2 = new Individual(instance);
+			Individual[] children = Individual.crossover(parent1, parent2, child1, child2);
+
+			children[0].mutateReverse();
+			children[1].mutateReverse();
+
+			children[0].decoding(instance);
+			children[0].evaluate();
+
+			children[1].decoding(instance);
+			children[1].evaluate();
+
+
+			if(children[0].getFitness() < parent1.getFitness())
+				parent1 = children[0];
+			if(children[1].getFitness() < parent2.getFitness())
+				parent2 = children[1];
 			
 		}
 		
@@ -89,5 +93,18 @@ public class GaSolver  {
 		//bestIndi.ausgabe(instance);      //printing your best solution
 		return bestIndi.getPhaenotype();   //return best decoded solution
 
+	}
+
+	private Individual tournamentSelection(Individual[] population, int tournamentSize) {
+		Random rand = new Random();
+		Individual best = null;
+		for (int i = 0; i < tournamentSize; i++) {
+			int randomIndex = rand.nextInt(popSize);
+			Individual candidate = population[randomIndex];
+			if (best == null || candidate.getFitness() < best.getFitness()) {
+				best = candidate;
+			}
+		}
+		return best;
 	}
 }
