@@ -51,10 +51,10 @@ public class GaSolver  {
 		for(int g=0;g<maxIter;g++){
 			int tournamentSize = 5;
 
-			parent1Index = randomSelection(pop, tournamentSize);
+			parent1Index = randomSelection(pop);
 			parent1 = pop[parent1Index];
 			do {
-				parent2Index = randomSelection(pop, tournamentSize);
+				parent2Index = randomSelection(pop);
 				parent2 = pop[parent2Index];
 			} while (parent2 == parent1);
 			child1 = new Individual(instance);
@@ -113,7 +113,7 @@ public class GaSolver  {
 		return bestIndiIndex;
 	}
 
-	private int randomSelection(Individual[] population, int tournamentSize) {
+	private int randomSelection(Individual[] population) {
 		Random rand = new Random();
 		return rand.nextInt(0, population.length);
 	}
