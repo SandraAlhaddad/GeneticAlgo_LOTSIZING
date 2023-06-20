@@ -2,6 +2,7 @@ package GA;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.Random;
 
 
 import domain.Instance;
@@ -99,15 +100,48 @@ public class Individual {
 		//pMut = 0.0005;
 		//System.out.println("Mutationswahrscheinlichkeit : " + pMut);
 	}
-	
-	public void mutate(){
-		for(int i=0;i<genotype.length;i++){
-				if(Math.random() < 0.02){
-					if(genotype[i] == 1)
-						genotype[i] = genotype[i]+1;
-					else                   
-						genotype[i] = genotype[i]+1;
-				}
+
+
+	public void mutateReverse() {
+		Random rand = new Random();
+		int startGen = rand.nextInt(genotype.length);
+		int endGen = rand.nextInt(genotype.length);
+		if (startGen > endGen) {
+			int startGenTemp = startGen;
+			startGen = endGen;
+			endGen = startGenTemp;
+		}
+
+		while (startGen < endGen) {
+			int temp = genotype[startGen];
+			genotype[startGen] = genotype[endGen];
+			genotype[endGen] = temp;
+			startGen++;
+			endGen--;
+		}
+	}
+
+
+
+
+	public static Individual[] crossover(Individual parent1, Individual parent2, Individual child1, Individual child2) {
+		int length = parent1.genotype.length;
+
+		Random rand = new Random();
+		int crossoverPoint = rand.nextInt(length);
+
+		for (int i = 0; i < length; i++) {
+			if (i < crossoverPoint) {
+				child1.genotype[i] = parent1.genotype[i];
+				child2.genotype[i] = parent2.genotype[i];
+			} else {
+				child1.genotype[i] = parent2.genotype[i];
+				child2.genotype[i] = parent1.genotype[i];
 			}
 		}
+
+		Individual[] children = new Individual[] { child1, child2 };
+		return children;
+	}
+
 }
