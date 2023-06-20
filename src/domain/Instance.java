@@ -78,13 +78,13 @@ public class Instance {
     	}
     	
         for (int itemKey = 1; itemKey <= itemCount; itemKey++) {
-        	
+        	determineDemandForClass(ps, itemKey);
         	if (getProblemClass() == ProblemClass.THREE) {
                 determineDemandForClassThree(ps, itemKey);
             }
-        	else {
-        		determineDemandForClass(ps, itemKey);
-        	}
+//        	else {
+//        		determineDemandForClass(ps, itemKey);
+//        	}
         	for (int period = 1; period <= periodCount; period++) {
         		if (ps.getDemandForPeriod(itemKey, period) != 0 ) {
         			firstPeriod = period;
