@@ -59,17 +59,48 @@ public class GaSolver  {
 			} while (parent2 == parent1);
 			child1 = new Individual(instance);
 			child2 = new Individual(instance);
+			
+//			System.out.println("Parent1: ");
+//			int[] genop1 = parent1.getGenotype(); 
+//			for (int i = 0; i < genop1.length; i++) {
+//				System.out.print(genop1[i] + " ");
+//			}
+//			System.out.println();
+//			System.out.println("Parent2: ");
+//			int[] genop2 = parent2.getGenotype(); 
+//			for (int i = 0; i < genop2.length; i++) {
+//				System.out.print(genop2[i] + " ");
+//			}
+//			System.out.println();
+			
 			Individual[] children = Individual.crossover(parent1, parent2, child1, child2);
-
+//			System.out.println("Children ");
+//			for (int j = 0; j < children.length; j ++ ) {
+//				Individual ind = children[j];
+//				int[] geno = ind.getGenotype(); 
+//				for (int i = 0; i < geno.length; i++) {
+//					System.out.print(geno[i] + " ");
+//				}
+//				System.out.println();
+//			}
 			children[0].mutateReverse();
 			children[1].mutateReverse();
 
+//			System.out.println("Children after mutation ");
+//			for (int j = 0; j < children.length; j ++ ) {
+//				Individual ind = children[j];
+//				int[] geno = ind.getGenotype(); 
+//				for (int i = 0; i < geno.length; i++) {
+//					System.out.print(geno[i] + " ");
+//				}
+//				System.out.println();
+//			}
+			
 			children[0].decoding(instance);
 			children[0].evaluate();
 
 			children[1].decoding(instance);
 			children[1].evaluate();
-
 
 			if(children[0].getFitness() < parent1.getFitness())
 				pop[parent1Index] = children[0];

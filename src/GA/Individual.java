@@ -18,6 +18,10 @@ public class Individual {
 	private double fitness;
 	private Instance instance;
 
+	public int[] getGenotype() {
+		return genotype;
+	}
+	
 	public static void firstLastPeriods(Instance inst){
 		ProductionSchedule ps = new ProductionSchedule(inst.getItemCount(), inst.getPeriodCount());
     	inst.decodeMatrix(ps);
